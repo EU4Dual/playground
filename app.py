@@ -1,9 +1,9 @@
-from flask import Flask, render_template, jsonify
+# from flask import Flask, render_template, jsonify
 import configparser
 import psycopg2
 
-app = Flask(__name__)
-app.json.sort_keys = False
+# app = Flask(__name__)
+# app.json.sort_keys = False
 
 # Create a ConfigParser object
 config = configparser.ConfigParser()
@@ -31,11 +31,12 @@ cursor.execute("SELECT * FROM campus;")
 # Retrieve query results
 records = cursor.fetchall()
 
+print(records)
 
-@app.route('/')
-def hello():
-    return records
+# @app.route('/')
+# def hello():
+#     return records
 
 
-if __name__ == "__main__":
-    app.run(debug=True)
+# if __name__ == "__main__":
+#     app.run(debug=True)
