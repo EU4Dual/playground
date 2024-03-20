@@ -60,7 +60,7 @@ def read_excel_file(file_path):
 file_path = 'resources/sample_module_data.xlsx'
 header_row, data_rows = read_excel_file(file_path)
 
-# Print the rows in the terminal for verification
+# Print the rows in the console for verification
 if header_row and data_rows:
     print("\n - Header row -\n", header_row)
     print("\n - Data rows -\n", data_rows)
@@ -97,7 +97,7 @@ def generate_sql_commands(header_row, data_rows):
 # Call generate_sql_commands() function
 create_command, insert_command = generate_sql_commands(header_row, data_rows)
 
-# Print the SQL commands in the terminal for verification
+# Print the SQL commands in the console for verification
 if create_command and insert_command:
     print("\n - CREATE SQL command -")
     print(create_command)
@@ -133,7 +133,7 @@ def getAllData():
     # Retrieve query results
     records = cursor.fetchall()
 
-    # Print the query results in terminal for verification
+    # Print the query results in console for verification
     print(records)
 
     # --- BEGIN OF TASK 3 ---
