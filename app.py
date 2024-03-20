@@ -1,6 +1,7 @@
-from flask import Flask, render_template, jsonify
+from flask import Flask, jsonify
 import configparser
 import psycopg2
+import task
 
 app = Flask(__name__)
 app.json.sort_keys = False
@@ -24,21 +25,40 @@ connection = psycopg2.connect(database=database, user=user, password=password, h
 # Open a cursor to perform database operations
 cursor = connection.cursor()
 
-# Execute a query
-cursor.execute("SELECT * FROM campus;")
-
-# Retrieve query results
-records = cursor.fetchall()
-
-# Print the query results in terminal
-print(records)
+# Execute the SQL commands
+# Delete the table 'module' if exists, this will ensure a new table and entries are created in every execution
+cursor.execute('DROP TABLE IF EXISTS module;')
+cursor.execute(task.create_command)
+cursor.execute(task.insert_command)
+connection.commit()
 
 
-# Display the query records in http://127.0.0.1:5000
-@app.route('/')
-def hello():
-    return records
+# Create an API endpoint at /getAllData
+@app.route('/getAllData', methods=['GET'])
+def getAllData():
+
+    # Execute a SQL command to select all entries from module
+    cursor.execute('SELECT * FROM module;')
+
+    # Retrieve query results
+    records = cursor.fetchall()
+
+    # Print the query results in terminal for verification
+    print(records)
+
+    # Build the API response
+    # Get column names from cursor description
+    column_names = [desc[0] for desc in cursor.description]
+
+    # Build a list of dictionaries with column headers and values
+    result_data = []
+    for row in records:
+        result_data.append(dict(zip(column_names, row)))
+
+    return jsonify(result_data)
 
 
 if __name__ == "__main__":
     app.run(debug=True)
+
+
