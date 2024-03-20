@@ -1,9 +1,9 @@
-# from flask import Flask, render_template, jsonify
+from flask import Flask, render_template, jsonify
 import configparser
 import psycopg2
 
-# app = Flask(__name__)
-# app.json.sort_keys = False
+app = Flask(__name__)
+app.json.sort_keys = False
 
 # Create a ConfigParser object
 config = configparser.ConfigParser()
@@ -26,17 +26,19 @@ cursor = connection.cursor()
 
 # Execute a query
 cursor.execute("SELECT * FROM campus;")
-# cursor.execute("SELECT table_name FROM information_schema.tables WHERE table_schema = 'public';")
 
 # Retrieve query results
 records = cursor.fetchall()
 
+# Print the query results in terminal
 print(records)
 
-# @app.route('/')
-# def hello():
-#     return records
+
+# Display the query records in http://127.0.0.1:5000
+@app.route('/')
+def hello():
+    return records
 
 
-# if __name__ == "__main__":
-#     app.run(debug=True)
+if __name__ == "__main__":
+    app.run(debug=True)
