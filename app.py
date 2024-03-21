@@ -79,7 +79,7 @@ def generate_sql_commands(header_row, data_rows):
     # End if either header_row or data_rows are empty
     if not header_row or not data_rows:
         print("Header row or data rows are empty.")
-        return
+        return None, None
 
     # --- BEGIN OF TASK 2 ---
 
@@ -110,10 +110,12 @@ else:
 # [Step 4]
 # Execute the SQL commands
 # Delete the table 'module' if exists, this will ensure a new table and entries are created in every execution
-cursor.execute('DROP TABLE IF EXISTS module;')
-cursor.execute(create_command)
-cursor.execute(insert_command)
-connection.commit()
+# Check if the variables are None before executing the SQL commands
+if create_command is not None and insert_command is not None:
+    cursor.execute('DROP TABLE IF EXISTS module;')
+    cursor.execute(create_command)
+    cursor.execute(insert_command)
+    connection.commit()
 
 
 # [Step 5]
