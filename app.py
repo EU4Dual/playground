@@ -1,19 +1,18 @@
+
 from flask import Flask, jsonify
 import configparser
-config.read('config.ini')
 import psycopg2
 import pandas as pd
+
+# Create a ConfigParser object and read the configuration file
+config = configparser.ConfigParser()
+config.read('config.ini')
 
 # [Step 1]
 # Set up the web framework with Flask and the connection to database with psycopg2
 
 app = Flask(__name__)
 app.json.sort_keys = False
-
-# Create a ConfigParser object
-config = configparser.ConfigParser()
-
-# Read the file using the object
 
 # Obtain the configuration values
 database = config.get('database', 'database')
@@ -40,15 +39,23 @@ def read_excel_file(file_path):
         # Read the Excel file
         df = pd.read_excel(file_path)
 
-        # --- BEGIN OF TASK 1 ---
+        import openpyxl
 
-        # Add your code to extract the header row of the table as a list in Excel
-        header_row = []
+        # Load the Excel file
+        workbook = openpyxl.load_workbook('your_excel_file.xlsx')
 
-        # Add your code to extract all other rows of the table as a list in Excel
-        data_rows = []
+        # Assuming the table is in the first sheet, you can change the sheet name or index as needed
+        sheet = workbook.active
 
-        # --- END OF TASK 1 ---
+        # Extract header row
+        header_row = [cell.value for cell in sheet[1]]
+
+        # Extract all other rows
+        data_rows = [[cell.value for cell in row] for row in sheet.iter_rows(min_row=2)]
+
+        # Print header row and data rows
+        print("Header Row:", header_row)
+        print("Data Rows:", data_rows)
 
         return header_row, data_rows
     except Exception as e:
@@ -81,15 +88,17 @@ def generate_sql_commands(header_row, data_rows):
         print("Header row or data rows are empty.")
         return None, None
 
-    # --- BEGIN OF TASK 2 ---
+    # Generating SQL command to create table 'module'
+    create_command = f"CREATE TABLE module ({', '.join([f'{col} VARCHAR(255)' for col in header_row])});"
 
-    # Add your codes to generate a SQL command that create a table called 'module' and contains header_row as keys
-    create_command = ""
+    # Generating SQL commands to insert data into 'module' table
+    insert_commands = []
+    for row in data_rows:
+        values = ', '.join([f"'{value}'" if value else "NULL" for value in row])
+        insert_commands.append(f"INSERT INTO module VALUES ({values});")
 
-    # Add your codes to generate a SQL command that insert every row from data_rows to the table 'module'
-    insert_command = ""
-
-    # --- END OF TASK 2 ---
+    # Join insert commands into a single string
+    insert_command = "\n".join(insert_commands)
 
     return create_command, insert_command
 
@@ -138,15 +147,15 @@ def getAllData():
     # Print the query results in console for verification
     print(records)
 
-    # --- BEGIN OF TASK 3 ---
+    # Assuming 'cursor' is your cursor object containing the query result
 
     # Add your codes to get the column names from cursor
-    column_names = []
+    column_names = [column[0] for column in cursor.description]
 
     # Add your codes to build a list of dictionaries with column_names and values from records
     result_data = []
-
-    # --- END OF TASK 3 ---
+    for record in cursor.fetchall():
+        result_data.append(dict(zip(column_names, record)))
 
     # Convert result_data to JSON format and return as the API response
     return jsonify(result_data)
@@ -154,3 +163,4 @@ def getAllData():
 
 if __name__ == "__main__":
     app.run(debug=True)
+
