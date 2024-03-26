@@ -1,5 +1,6 @@
 from flask import Flask, jsonify
 import configparser
+config.read('config.ini')
 import psycopg2
 import pandas as pd
 
@@ -13,7 +14,6 @@ app.json.sort_keys = False
 config = configparser.ConfigParser()
 
 # Read the file using the object
-config.read('config.ini')
 
 # Obtain the configuration values
 database = config.get('database', 'database')
